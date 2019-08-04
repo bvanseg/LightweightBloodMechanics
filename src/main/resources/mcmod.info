@@ -1,0 +1,16 @@
+[
+{
+  "modid": "lbm",
+  "name": "Lightweight Blood Mechanics",
+  "description": "Adds blood mechanics to the game without the extra clutter other mods add.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Ri5ux"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
