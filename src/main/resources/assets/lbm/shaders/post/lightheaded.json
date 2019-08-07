@@ -1,0 +1,81 @@
+{
+    "targets": [
+        "swap",
+        "previous"
+    ],
+    "passes": [
+        {
+            "name": "color_convolve",
+            "intarget": "minecraft:main",
+            "outtarget": "swap",
+            "uniforms": [
+                {
+                    "name": "Saturation",
+                    "values": [ 0.25 ]
+                }
+            ]
+        },
+        {
+            "name": "blit",
+            "intarget": "swap",
+            "outtarget": "minecraft:main"
+        },
+        {
+            "name": "phosphor",
+            "intarget": "minecraft:main",
+            "outtarget": "swap",
+            "auxtargets": [
+                {
+                    "name": "PrevSampler",
+                    "id": "previous"
+                }
+            ],
+            "uniforms": [
+                {
+                    "name": "Phosphor",
+                    "values": [ 0.938, 0.94, 0.933 ]
+                }
+            ]
+        },
+        {
+            "name": "blit",
+            "intarget": "swap",
+            "outtarget": "previous"
+        },
+        {
+            "name": "blit",
+            "intarget": "swap",
+            "outtarget": "minecraft:main"
+        },
+        {
+            "name": "blur",
+            "intarget": "minecraft:main",
+            "outtarget": "swap",
+            "uniforms": [
+                {
+                    "name": "BlurDir",
+                    "values": [ 1.0, 0.0 ]
+                },
+                {
+                    "name": "Radius",
+                    "values": [ 5.0 ]
+                }
+            ]
+        },
+        {
+            "name": "blur",
+            "intarget": "swap",
+            "outtarget": "minecraft:main",
+            "uniforms": [
+                {
+                    "name": "BlurDir",
+                    "values": [ 0.0, 1.0 ]
+                },
+                {
+                    "name": "Radius",
+                    "values": [ 12.0 ]
+                }
+            ]
+        }
+    ]
+}
