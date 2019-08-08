@@ -258,7 +258,6 @@ public interface IBleedableCapability
                     {
                         bleedable.setBloodCount(bleedable.getBloodCount() - (int) (2 + (living.getRNG().nextInt(2)) * (LBM.settings().getHeavyBloodLossMultiplier() + bpm > 100 ? 1 : 0)));
 
-                        System.out.println(world.isRemote);
                         if (!world.isRemote)
                         LBM.network().sendToAll(new PacketBleed(living, 0.1F + ((float) LBM.settings().getHeavyBleedSpread() + living.getRNG().nextFloat()), (int) Math.floor(LBM.settings().getBloodDetailLevel() / (bpm > 100 ? 1 : 3))));
 
