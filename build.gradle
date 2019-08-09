@@ -49,7 +49,7 @@ def mavenUsername=project.ext.properties.mavenUsername == null ? "user" : projec
 def mavenPassword=project.ext.properties.mavenPassword == null ? "none" : project.ext.properties.mavenPassword
 
 
-version = "1.0"
+version = "${System.env.PROJECT_VERSION}"
 group = "com.asx.lbm"
 archivesBaseName = "lbm"
 
