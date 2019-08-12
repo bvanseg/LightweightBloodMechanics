@@ -254,37 +254,33 @@ public interface IBleedableCapability
 
                 if (living.isPotionActive(PotionHandler.HEAVY_BLEED))
                 {
-                    if (living.ticksExisted % LBM.settings().getHeavyBleedInterval() * 1 + (living.getRNG().nextInt(3) * LBM.settings().getHeavyBleedInterval()) == 0)
+                    int heavyBleedInterval = LBM.settings().getHeavyBleedInterval() + (living.getRNG().nextInt(3) * LBM.settings().getHeavyBleedInterval());
+                    
+                    if (living.ticksExisted % heavyBleedInterval == 0)
                     {
                         bleedable.setBloodCount(bleedable.getBloodCount() - (int) (2 + (living.getRNG().nextInt(2)) * (LBM.settings().getHeavyBloodLossMultiplier() + bpm > 100 ? 1 : 0)));
 
                         if (!world.isRemote)
-                        LBM.network().sendToAll(new PacketBleed(living, 0.1F + ((float) LBM.settings().getHeavyBleedSpread() + living.getRNG().nextFloat()), (int) Math.floor(LBM.settings().getBloodDetailLevel() / (bpm > 100 ? 1 : 3))));
-
-                        // if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
-                        // {
-                        // BloodHandler.bleed(living, 0.1F + ((float) LBM.settings().getHeavyBleedSpread() +
-                        // living.getRNG().nextFloat()), (int) Math.floor(LBM.settings().getBloodDetailLevel() / (bpm > 100
-                        // ? 1 : 3)));
-                        // }
+                        {
+                            LBM.network().sendToAll(new PacketBleed(living, 0.1F + ((float) LBM.settings().getHeavyBleedSpread() + living.getRNG().nextFloat()), (int) Math.floor(LBM.settings().getBloodDetailLevel() / (bpm > 100 ? 1 : 3))));
+                        }
                     }
                 }
                 else if (living.isPotionActive(PotionHandler.LIGHT_BLEED))
                 {
-                    if (living.ticksExisted % LBM.settings().getLightBleedInterval() * 1 + (living.getRNG().nextInt(2) * LBM.settings().getLightBleedInterval()) == 0)
+                    int lightBleedInterval = LBM.settings().getLightBleedInterval();
+
+                    if (living.ticksExisted % lightBleedInterval == 0)
                     {
-                        bleedable.setBloodCount(bleedable.getBloodCount() - (int) (1) * (LBM.settings().getLightBloodLossMultiplier()));
+                        bleedable.setBloodCount(bleedable.getBloodCount() - LBM.settings().getLightBloodLossMultiplier());
                     }
 
-                    if (living.ticksExisted % (LBM.settings().getLightBleedInterval() - 6) * 1 + (living.getRNG().nextInt(2) * (LBM.settings().getLightBleedInterval() - 6)) == 0)
+                    if (living.ticksExisted % LBM.settings().getLightBleedInterval() + (living.getRNG().nextInt(2) * (LBM.settings().getLightBleedInterval())) == 0)
                     {
                         if (!world.isRemote)
-                        LBM.network().sendToAll(new PacketBleed(living, (float) LBM.settings().getLightBleedSpread(), 1 + (living.getRNG().nextInt(2) - 1)));
-                        
-//                        if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
-//                        {
-//                            BloodHandler.bleed(living, (float) LBM.settings().getLightBleedSpread(), 1 + (living.getRNG().nextInt(2) - 1));
-//                        }
+                        {
+                            LBM.network().sendToAll(new PacketBleed(living, (float) LBM.settings().getLightBleedSpread(), 1 + (living.getRNG().nextInt(2) - 1)));
+                        }
                     }
                 }
                 else
