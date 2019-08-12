@@ -231,67 +231,70 @@ public interface IBleedableCapability
 
             if (!doNotEffectEntity)
             {
-                if (100 * bleedable.getBloodCount() / bleedable.getMaxBloodCount() <= 40)
+                if (bleedable.getMaxBloodCount() > 0)
                 {
-                    if (!living.isPotionActive(PotionHandler.LIGHTHEADED))
+                    if (100 * bleedable.getBloodCount() / bleedable.getMaxBloodCount() <= 40)
                     {
-                        living.addPotionEffect(new PotionEffect(PotionHandler.LIGHTHEADED, 20 * 30));
-                    }
-                }
-
-                if (bleedable.getBloodCount() <= 0)
-                {
-                    living.attackEntityFrom(DamageSources.BLOOD_LOSS, living.getHealth());
-                }
-
-                if (bleedable.getBloodCount() * 100 / bleedable.getMaxBloodCount() <= 20)
-                {
-                    if (!living.isPotionActive(MobEffects.BLINDNESS))
-                    {
-                        living.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 20 * 30));
-                    }
-                }
-
-                if (living.isPotionActive(PotionHandler.HEAVY_BLEED))
-                {
-                    int heavyBleedInterval = LBM.settings().getHeavyBleedInterval() + (living.getRNG().nextInt(3) * LBM.settings().getHeavyBleedInterval());
-                    
-                    if (living.ticksExisted % heavyBleedInterval == 0)
-                    {
-                        bleedable.setBloodCount(bleedable.getBloodCount() - (int) (2 + (living.getRNG().nextInt(2)) * (LBM.settings().getHeavyBloodLossMultiplier() + bpm > 100 ? 1 : 0)));
-
-                        if (!world.isRemote)
+                        if (!living.isPotionActive(PotionHandler.LIGHTHEADED))
                         {
-                            LBM.network().sendToAll(new PacketBleed(living, 0.1F + ((float) LBM.settings().getHeavyBleedSpread() + living.getRNG().nextFloat()), (int) Math.floor(LBM.settings().getBloodDetailLevel() / (bpm > 100 ? 1 : 3))));
+                            living.addPotionEffect(new PotionEffect(PotionHandler.LIGHTHEADED, 20 * 30));
                         }
                     }
-                }
-                else if (living.isPotionActive(PotionHandler.LIGHT_BLEED))
-                {
-                    int lightBleedInterval = LBM.settings().getLightBleedInterval();
 
-                    if (living.ticksExisted % lightBleedInterval == 0)
+                    if (bleedable.getBloodCount() <= 0)
                     {
-                        bleedable.setBloodCount(bleedable.getBloodCount() - LBM.settings().getLightBloodLossMultiplier());
+                        living.attackEntityFrom(DamageSources.BLOOD_LOSS, living.getHealth());
                     }
 
-                    if (living.ticksExisted % LBM.settings().getLightBleedInterval() + (living.getRNG().nextInt(2) * (LBM.settings().getLightBleedInterval())) == 0)
+                    if (bleedable.getBloodCount() * 100 / bleedable.getMaxBloodCount() <= 20)
                     {
-                        if (!world.isRemote)
+                        if (!living.isPotionActive(MobEffects.BLINDNESS))
                         {
-                            LBM.network().sendToAll(new PacketBleed(living, (float) LBM.settings().getLightBleedSpread(), 1 + (living.getRNG().nextInt(2) - 1)));
+                            living.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 20 * 30));
                         }
                     }
-                }
-                else
-                {
-                    if (living.getHealth() >= living.getMaxHealth())
+
+                    if (living.isPotionActive(PotionHandler.HEAVY_BLEED))
                     {
-                        if (living.ticksExisted % 20 * 4 == 0)
+                        int heavyBleedInterval = LBM.settings().getHeavyBleedInterval() + (living.getRNG().nextInt(3) * LBM.settings().getHeavyBleedInterval());
+
+                        if (living.ticksExisted % heavyBleedInterval == 0)
                         {
-                            if (bleedable.getBloodCount() < bleedable.getMaxBloodCount())
+                            bleedable.setBloodCount(bleedable.getBloodCount() - (int) (2 + (living.getRNG().nextInt(2)) * (LBM.settings().getHeavyBloodLossMultiplier() + bpm > 100 ? 1 : 0)));
+
+                            if (!world.isRemote)
                             {
-                                bleedable.setBloodCount(bleedable.getBloodCount() + 1);
+                                LBM.network().sendToAll(new PacketBleed(living, 0.1F + ((float) LBM.settings().getHeavyBleedSpread() + living.getRNG().nextFloat()), (int) Math.floor(LBM.settings().getBloodDetailLevel() / (bpm > 100 ? 1 : 3))));
+                            }
+                        }
+                    }
+                    else if (living.isPotionActive(PotionHandler.LIGHT_BLEED))
+                    {
+                        int lightBleedInterval = LBM.settings().getLightBleedInterval();
+
+                        if (living.ticksExisted % lightBleedInterval == 0)
+                        {
+                            bleedable.setBloodCount(bleedable.getBloodCount() - LBM.settings().getLightBloodLossMultiplier());
+                        }
+
+                        if (living.ticksExisted % LBM.settings().getLightBleedInterval() + (living.getRNG().nextInt(2) * (LBM.settings().getLightBleedInterval())) == 0)
+                        {
+                            if (!world.isRemote)
+                            {
+                                LBM.network().sendToAll(new PacketBleed(living, (float) LBM.settings().getLightBleedSpread(), 1 + (living.getRNG().nextInt(2) - 1)));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (living.getHealth() >= living.getMaxHealth())
+                        {
+                            if (living.ticksExisted % 20 * 4 == 0)
+                            {
+                                if (bleedable.getBloodCount() < bleedable.getMaxBloodCount())
+                                {
+                                    bleedable.setBloodCount(bleedable.getBloodCount() + 1);
+                                }
                             }
                         }
                     }
