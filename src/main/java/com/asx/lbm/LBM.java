@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = Properties.ID, name = Properties.NAME, version = Properties.VERSION)
+@Mod(modid = Properties.ID, name = Properties.NAME, version = Properties.VERSION, acceptableRemoteVersions = "*", dependencies = "required-after:mdxlib;")
 public class LBM
 {
     public static final Logger LOGGER = LogManager.getLogger("LBM");
