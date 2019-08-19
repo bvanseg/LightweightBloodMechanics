@@ -176,27 +176,33 @@ public class Events
 
         if (event.getAmount() >= 7 || event.getSource().isExplosion() || event.getSource().isProjectile())
         {
-            if (event.getEntityLiving().isPotionActive(PotionHandler.HEAVY_BLEED))
-            {
-                PotionEffect effect = event.getEntityLiving().getActivePotionEffect(PotionHandler.HEAVY_BLEED);
-                event.getEntityLiving().addPotionEffect(new PotionEffect(PotionHandler.HEAVY_BLEED, effect.getDuration() + (20 * 30)));
-            }
-            else
-            {
-                event.getEntityLiving().addPotionEffect(new PotionEffect(PotionHandler.HEAVY_BLEED, 20 * 60));
-            }
+        	if (event.getEntityLiving().getRNG().nextInt(LBM.settings().getHeavyBleedChance()) == 0)
+        	{
+	            if (event.getEntityLiving().isPotionActive(PotionHandler.HEAVY_BLEED))
+	            {
+	                PotionEffect effect = event.getEntityLiving().getActivePotionEffect(PotionHandler.HEAVY_BLEED);
+	                event.getEntityLiving().addPotionEffect(new PotionEffect(PotionHandler.HEAVY_BLEED, effect.getDuration() + (20 * 30)));
+	            }
+	            else
+	            {
+	                event.getEntityLiving().addPotionEffect(new PotionEffect(PotionHandler.HEAVY_BLEED, 20 * 60));
+	            }
+        	}
         }
-        else if (event.getAmount() >= 3)
+        else if (event.getAmount() >= 4)
         {
-            if (event.getEntityLiving().isPotionActive(PotionHandler.LIGHT_BLEED))
-            {
-                PotionEffect effect = event.getEntityLiving().getActivePotionEffect(PotionHandler.LIGHT_BLEED);
-                event.getEntityLiving().addPotionEffect(new PotionEffect(PotionHandler.LIGHT_BLEED, effect.getDuration() + (20 * 30)));
-            }
-            else
-            {
-                event.getEntityLiving().addPotionEffect(new PotionEffect(PotionHandler.LIGHT_BLEED, 20 * 60));
-            }
+        	if (event.getEntityLiving().getRNG().nextInt(LBM.settings().getLightBleedChance()) == 0)
+        	{
+	            if (event.getEntityLiving().isPotionActive(PotionHandler.LIGHT_BLEED))
+	            {
+	                PotionEffect effect = event.getEntityLiving().getActivePotionEffect(PotionHandler.LIGHT_BLEED);
+	                event.getEntityLiving().addPotionEffect(new PotionEffect(PotionHandler.LIGHT_BLEED, effect.getDuration() + (20 * 30)));
+	            }
+	            else
+	            {
+	                event.getEntityLiving().addPotionEffect(new PotionEffect(PotionHandler.LIGHT_BLEED, 20 * 60));
+	            }
+        	}
         }
 
         if (event.getAmount() >= 2)
