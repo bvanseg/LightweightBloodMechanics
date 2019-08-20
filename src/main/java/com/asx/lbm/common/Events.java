@@ -5,7 +5,7 @@ import com.asx.lbm.client.Resources;
 import com.asx.lbm.client.Shaders;
 import com.asx.lbm.common.capabilities.IBleedableCapability.Bleedable;
 import com.asx.lbm.common.capabilities.IBleedableCapability.Provider;
-import com.asx.lbm.common.packets.client.PacketBleed;
+import com.asx.lbm.common.packets.client.PacketBleedEffect;
 import com.asx.mdx.lib.client.util.Draw;
 import com.asx.mdx.lib.client.util.OpenGL;
 import com.asx.mdx.lib.util.Game;
@@ -13,12 +13,11 @@ import com.asx.mdx.lib.util.Game;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.potion.PotionEffect;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -63,16 +62,10 @@ public class Events
     {
         Bleedable bleedable = (Bleedable) Game.minecraft().player.getCapability(Provider.CAPABILITY, null);
 
-        // if (!Game.minecraft().player.capabilities.isCreativeMode && (System.currentTimeMillis() -
-        // lastBloodBarActivationTime <= bloodBarDisplayPeriod ||
-        // Game.minecraft().player.isPotionActive(PotionHandler.LIGHT_BLEED) ||
-        // Game.minecraft().player.isPotionActive(PotionHandler.HEAVY_BLEED)))
+        if (!Game.minecraft().player.capabilities.isCreativeMode && (System.currentTimeMillis() - lastBloodBarActivationTime <= bloodBarDisplayPeriod || Game.minecraft().player.isPotionActive(PotionHandler.LIGHT_BLEED) || Game.minecraft().player.isPotionActive(PotionHandler.HEAVY_BLEED)))
         {
             if (bleedable.getMaxBloodCount() > 0 && bleedable.getBloodCount() > 0)
             {
-                int xSkip = 0;
-                int skipVal = 6;
-
                 int width = 5;
                 int height = 30;
                 int posX = (int) (event.getResolution().getScaledWidth() / 2) + 93;
@@ -80,13 +73,6 @@ public class Events
                 drawVerticalProgressBar(bleedable.getBloodCount(), bleedable.getMaxBloodCount(), posX, posY, width, height, 0x77FF0000, 0x77880000);
                 OpenGL.enableBlend();
                 Draw.drawResource(Resources.BLOOD_DROP, posX - 1, posY - 9, 8, 8);
-
-                // width = 5;
-                // height = 39;
-                // posX = (int) (event.getResolution().getScaledWidth() / 2) + 93 + (xSkip += skipVal);
-                // posY = event.getResolution().getScaledHeight() - height;
-                // drawVerticalProgressBar(bleedable.getHeartRate(), 130, posX, posY, width, height, 0x77AAFF00,
-                // 0xFF448800);
             }
 
             OpenGL.color(1F, 1F, 1F, 1F);
@@ -133,88 +119,34 @@ public class Events
                     }
                 }
             }
-
-            // for (int x = 0; x < event.world.loadedEntityList.size(); ++x)
-            // {
-            // Entity entity = (Entity) event.world.loadedEntityList.get(x);
-            //
-            // if (EntityZombie.class.isInstance(entity) || EntitySlime.class.isInstance(entity))
-            // {
-            // entity.setDead();
-            // entity = null;
-            // }
-            // }
         }
-    }
-
-    @SubscribeEvent
-    public void onEntityHitByProjectile(net.minecraftforge.event.entity.ProjectileImpactEvent event)
-    {
-        ;
-    }
-
-    @SubscribeEvent
-    public void onLivingHeal(LivingHealEvent event)
-    {
-        // Bleedable bleedable = (Bleedable) event.getEntityLiving().getCapability(Provider.CAPABILITY,
-        // null);
-        // bleedable.setBloodCount(bleedable.getMaxBloodCount());
-        // bleedable.syncClients(event.getEntityLiving());
     }
 
     @SubscribeEvent
     public void onLivingHurt(LivingHurtEvent event)
     {
-        Bleedable bleedable = (Bleedable) event.getEntityLiving().getCapability(Provider.CAPABILITY, null);
-
-        float mult = event.getAmount() / 3;
-
-        if (event.getSource().isExplosion())
+        float damage = event.getAmount();
+        float multiplier = event.getSource().isExplosion() ? damage : damage / 3;
+        EntityLivingBase living = event.getEntityLiving();
+        Bleedable bleedable = (Bleedable) living.getCapability(Provider.CAPABILITY, null);
+        
+        if (living.isServerWorld())
         {
-            mult = event.getAmount();
+            bleedable.setHeartRate(130 + living.getRNG().nextInt(20));
+            bleedable.setBloodCount(bleedable.getBloodCount() - (int) (damage * (LBM.settings().getImpactBloodLossMultiplier())));
+            BloodHandler.handleInjury(event.getEntityLiving(), event.getAmount(), event.getSource().isExplosion(), event.getSource().isProjectile());
+//            LBM.network().sendToAll(new PacketDamageEntity(event.getEntityLiving(), event.getAmount(), event.getSource()));
         }
-
-        if (event.getAmount() >= 7 || event.getSource().isExplosion() || event.getSource().isProjectile())
+        
+        if (damage >= 2)
         {
-        	if (event.getEntityLiving().getRNG().nextInt(LBM.settings().getHeavyBleedChance()) == 0)
-        	{
-	            if (event.getEntityLiving().isPotionActive(PotionHandler.HEAVY_BLEED))
-	            {
-	                PotionEffect effect = event.getEntityLiving().getActivePotionEffect(PotionHandler.HEAVY_BLEED);
-	                event.getEntityLiving().addPotionEffect(new PotionEffect(PotionHandler.HEAVY_BLEED, effect.getDuration() + (20 * 30)));
-	            }
-	            else
-	            {
-	                event.getEntityLiving().addPotionEffect(new PotionEffect(PotionHandler.HEAVY_BLEED, 20 * 60));
-	            }
-        	}
-        }
-        else if (event.getAmount() >= 4)
-        {
-        	if (event.getEntityLiving().getRNG().nextInt(LBM.settings().getLightBleedChance()) == 0)
-        	{
-	            if (event.getEntityLiving().isPotionActive(PotionHandler.LIGHT_BLEED))
-	            {
-	                PotionEffect effect = event.getEntityLiving().getActivePotionEffect(PotionHandler.LIGHT_BLEED);
-	                event.getEntityLiving().addPotionEffect(new PotionEffect(PotionHandler.LIGHT_BLEED, effect.getDuration() + (20 * 30)));
-	            }
-	            else
-	            {
-	                event.getEntityLiving().addPotionEffect(new PotionEffect(PotionHandler.LIGHT_BLEED, 20 * 60));
-	            }
-        	}
-        }
-
-        if (event.getAmount() >= 2)
-        {
-            bleedable.setHeartRate(130 + event.getEntityLiving().getRNG().nextInt(20));
-            bleedable.setBloodCount(bleedable.getBloodCount() - (int) (event.getAmount() * (LBM.settings().getImpactBloodLossMultiplier() * 2)));
-
-            LBM.network().sendToAll(new PacketBleed(event.getEntityLiving(), 0.2F * mult, (int) Math.floor(LBM.settings().getBloodDetailLevel() * (event.getAmount() * LBM.settings().getImpactBloodLossMultiplier()))));
+            int detailLevel = LBM.settings().getBloodDetailLevel();
+            double bloodLossMultiplier = LBM.settings().getImpactBloodLossMultiplier();
+            LBM.network().sendToAll(new PacketBleedEffect(living, 0.2F * multiplier, (int) Math.floor(detailLevel * (damage * bloodLossMultiplier))));
             
 //            if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
 //            {
-//                BloodHandler.bleed(event.getEntityLiving(), 0.2F * mult, (int) Math.floor(LBM.settings().getBloodDetailLevel() * (event.getAmount() * LBM.settings().getImpactBloodLossMultiplier())));
+//                BloodHandler.bleedEffect(living, 0.2F * multiplier, (int) Math.floor(LBM.settings().getBloodDetailLevel() * (damage * LBM.settings().getImpactBloodLossMultiplier())));
 //            }
         }
     }

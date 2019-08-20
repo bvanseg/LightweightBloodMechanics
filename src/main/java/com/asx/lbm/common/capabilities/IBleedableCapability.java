@@ -7,7 +7,7 @@ import com.asx.lbm.common.BloodHandler;
 import com.asx.lbm.common.DamageSources;
 import com.asx.lbm.common.Events;
 import com.asx.lbm.common.PotionHandler;
-import com.asx.lbm.common.packets.client.PacketBleed;
+import com.asx.lbm.common.packets.client.PacketBleedEffect;
 import com.asx.lbm.common.packets.client.PacketBleedableClientSync;
 import com.asx.lbm.common.packets.server.PacketBleedableServerSync;
 
@@ -264,7 +264,7 @@ public interface IBleedableCapability
 
                             if (!world.isRemote)
                             {
-                                LBM.network().sendToAll(new PacketBleed(living, 0.1F + ((float) LBM.settings().getHeavyBleedSpread() + living.getRNG().nextFloat()), (int) Math.floor(LBM.settings().getBloodDetailLevel() / (bpm > 100 ? 1 : 3))));
+                                LBM.network().sendToAll(new PacketBleedEffect(living, 0.1F + ((float) LBM.settings().getHeavyBleedSpread() + living.getRNG().nextFloat()), (int) Math.floor(LBM.settings().getBloodDetailLevel() / (bpm > 100 ? 1 : 3))));
                             }
                         }
                     }
@@ -275,13 +275,10 @@ public interface IBleedableCapability
                         if (living.ticksExisted % lightBleedInterval == 0)
                         {
                             bleedable.setBloodCount(bleedable.getBloodCount() - LBM.settings().getLightBloodLossMultiplier());
-                        }
 
-                        if (living.ticksExisted % LBM.settings().getLightBleedInterval() + (living.getRNG().nextInt(2) * (LBM.settings().getLightBleedInterval())) == 0)
-                        {
                             if (!world.isRemote)
                             {
-                                LBM.network().sendToAll(new PacketBleed(living, (float) LBM.settings().getLightBleedSpread(), 1 + (living.getRNG().nextInt(2) - 1)));
+                                LBM.network().sendToAll(new PacketBleedEffect(living, (float) LBM.settings().getLightBleedSpread(), 1 + (living.getRNG().nextInt(2) - 1)));
                             }
                         }
                     }

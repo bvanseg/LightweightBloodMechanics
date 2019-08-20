@@ -8,26 +8,33 @@ import com.asx.mdx.lib.util.Game;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
 
-public class PacketBleed implements IMessage, IMessageHandler<PacketBleed, PacketBleed>
+public class PacketBleedEffect implements IMessage, IMessageHandler<PacketBleedEffect, PacketBleedEffect>
 {
-    private int entityId;
+    private int   entityId;
     private float spread;
-    private int amount;
+    private int   amount;
 
-    public PacketBleed()
+    public PacketBleedEffect()
     {
         ;
     }
 
-    public PacketBleed(EntityLivingBase living, float spread, int amount)
+    public PacketBleedEffect(EntityLivingBase living, float spread, int amount)
     {
         this.entityId = living.getEntityId();
         this.spread = spread;
         this.amount = amount;
+
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
+        {
+            BloodHandler.bleedEffect(living, spread, amount);
+        }
     }
 
     @Override
@@ -47,7 +54,7 @@ public class PacketBleed implements IMessage, IMessageHandler<PacketBleed, Packe
     }
 
     @Override
-    public PacketBleed onMessage(PacketBleed packet, MessageContext ctx)
+    public PacketBleedEffect onMessage(PacketBleedEffect packet, MessageContext ctx)
     {
         Game.minecraft().addScheduledTask(new Runnable() {
             @Override
@@ -64,7 +71,7 @@ public class PacketBleed implements IMessage, IMessageHandler<PacketBleed, Packe
 
                         if (bleedable != null)
                         {
-                            BloodHandler.bleed(living, packet.spread, packet.amount);
+                            BloodHandler.bleedEffect(living, packet.spread, packet.amount);
                         }
                     }
                 }

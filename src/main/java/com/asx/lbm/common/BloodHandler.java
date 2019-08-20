@@ -7,6 +7,9 @@ import java.util.Map;
 import com.asx.lbm.LBM;
 import com.asx.lbm.api.IBleedable;
 import com.asx.lbm.api.IBleedableException;
+import com.asx.lbm.common.capabilities.IBleedableCapability.Bleedable;
+import com.asx.lbm.common.capabilities.IBleedableCapability.Provider;
+import com.asx.lbm.common.packets.client.PacketBleedEffect;
 import com.asx.mdx.core.mods.IInitEvent;
 import com.asx.mdx.lib.client.entityfx.EntityBloodFX;
 import com.asx.mdx.lib.util.Game;
@@ -22,6 +25,8 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntitySkeletonHorse;
 import net.minecraft.entity.passive.EntitySquid;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -233,7 +238,7 @@ public class BloodHandler implements IInitEvent
     }
 
     @SideOnly(Side.CLIENT)
-    public static void bleed(EntityLivingBase living, float spread, int amount)
+    public static void bleedEffect(EntityLivingBase living, float spread, int amount)
     {
         boolean bleed = shouldBleed(living);
 
@@ -274,6 +279,33 @@ public class BloodHandler implements IInitEvent
 
                 Game.minecraft().effectRenderer.addEffect(new EntityBloodFX(living.world, pX, pY, pZ, color, glow));
             }
+        }
+    }
+    
+    public static void applyBleedWithChance(EntityLivingBase living, Potion potion, int chance, boolean override)
+    {
+        if (living.getRNG().nextInt(chance) == 0 || override)
+        {
+            applyBleed(living, potion);
+        }
+    }
+    
+    public static void applyBleed(EntityLivingBase living, Potion potion)
+    {
+        PotionEffect active = living.getActivePotionEffect(potion);
+        int duration = active != null ? active.getDuration() + (20 * 30) : 20 * 60;
+        living.addPotionEffect(new PotionEffect(potion, duration));
+    }
+    
+    public static void handleInjury(EntityLivingBase living, float damage, boolean explosion, boolean projectile)
+    {
+        if (damage >= 7 || explosion)
+        {
+            applyBleedWithChance(living, PotionHandler.HEAVY_BLEED, LBM.settings().getHeavyBleedChance(), explosion);
+        }
+        else if (damage >= 4 || projectile)
+        {
+            applyBleedWithChance(living, PotionHandler.LIGHT_BLEED, LBM.settings().getLightBleedChance(), projectile);
         }
     }
 }

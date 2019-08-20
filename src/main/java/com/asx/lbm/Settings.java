@@ -68,10 +68,10 @@ public class Settings implements IPreInitEvent, IFlexibleConfiguration
             bloodEnabled = new ConfigSettingBoolean(this, configuration.get(CATEGORY_OTHER, "blood_enabled", true, "If disabled, no blood will be dropped."));
             bloodDetailLevel = new ConfigSettingInteger(this, configuration.get(CATEGORY_OTHER, "blood_detail", 16, "Default: 16. Blood multiplier level. Higher levels = more blood."));
             impactBloodLossMultiplier = new ConfigSettingDouble(this, configuration.get(CATEGORY_OTHER, "impact_blood_loss_multiplier", 2, "Default: 2. Impact blood loss multiplier. Lower = less loss"));
-            lightBleedChance = new ConfigSettingInteger(this, configuration.get(CATEGORY_OTHER, "light_bleed_chance", 3, "Default: 3. Light bleed chance. 1 out of X chance of bleeding. 1 out of 3 being 33.33%"));
-            lightBleedInterval = new ConfigSettingInteger(this, configuration.get(CATEGORY_OTHER, "light_bleed_interval", 20, "Default: 20. Light bleed effect interval. (20 = 1 second, 40 = 2 seconds, etc) Lower = more often"));
+            lightBleedChance = new ConfigSettingInteger(this, configuration.get(CATEGORY_OTHER, "light_bleed_chance", 3, "Default: 3. Light bleed chance. 1 out of X chance of bleeding."));
+            lightBleedInterval = new ConfigSettingInteger(this, configuration.get(CATEGORY_OTHER, "light_bleed_interval", 40, "Default: 40. Light bleed effect interval. (20 = 1 second, 40 = 2 seconds, etc) Lower = more often"));
             lightBleedMultiplier = new ConfigSettingInteger(this, configuration.get(CATEGORY_OTHER, "light_bleed_multiplier", 1, "Default: 1. Light bleed effect multiplier. Higher = more loss"));
-            heavyBleedChance = new ConfigSettingInteger(this, configuration.get(CATEGORY_OTHER, "heavy_bleed_chance", 3, "Default: 3. Heavy bleed chance. 1 out of X chance of bleeding. 1 out of 3 being 33.33%"));
+            heavyBleedChance = new ConfigSettingInteger(this, configuration.get(CATEGORY_OTHER, "heavy_bleed_chance", 2, "Default: 2. Heavy bleed chance. 1 out of X chance of bleeding."));
             heavyBleedInterval = new ConfigSettingInteger(this, configuration.get(CATEGORY_OTHER, "heavy_bleed_interval", 15, "Default: 15. Heavy bleed effect interval. (20 = 1 second, 40 = 2 seconds, etc) Lower = more often"));
             heavyBleedMultiplier = new ConfigSettingInteger(this, configuration.get(CATEGORY_OTHER, "heavy_bleed_multiplier", 1, "Default: 1. Heavy bleed effect multiplier. Higher = more loss"));
             lightBleedSpread = new ConfigSettingDouble(this, configuration.get(CATEGORY_OTHER, "light_bleed_spread", 0.6, "Default: 0.6. Light bleed effect interval. Lower = more often"));

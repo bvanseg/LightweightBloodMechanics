@@ -1,6 +1,6 @@
 package com.asx.lbm;
 
-import com.asx.lbm.common.packets.client.PacketBleed;
+import com.asx.lbm.common.packets.client.PacketBleedEffect;
 import com.asx.lbm.common.packets.client.PacketBleedableClientSync;
 import com.asx.lbm.common.packets.server.PacketBleedableServerSync;
 import com.asx.mdx.core.mods.IInitEvent;
@@ -27,7 +27,7 @@ public class NetworkHandler extends SimpleNetworkWrapper implements IInitEvent
         this.registerMessage(Side.SERVER, PacketBleedableServerSync.class);
         
         /** Send to the client **/
-        this.registerMessage(Side.CLIENT, PacketBleed.class);
+        this.registerMessage(Side.CLIENT, PacketBleedEffect.class);
         this.registerMessage(Side.CLIENT, PacketBleedableClientSync.class);
     }
 
