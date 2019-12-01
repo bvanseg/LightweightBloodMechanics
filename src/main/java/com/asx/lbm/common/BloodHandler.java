@@ -277,7 +277,7 @@ public class BloodHandler implements IInitEvent
                 double pY = living.posY + (living.getRNG().nextDouble() * spread) - (living.getRNG().nextDouble() * spread);
                 double pZ = living.posZ + (living.getRNG().nextDouble() * spread) - (living.getRNG().nextDouble() * spread);
 
-                Game.minecraft().effectRenderer.addEffect(new EntityBloodFX(living.world, pX, pY, pZ, color, glow));
+                Game.minecraft().effectRenderer.addEffect(new EntityBloodFX(living.world, pX, pY, pZ, color, 30 * 20, glow));
             }
         }
     }
